@@ -1,3 +1,5 @@
+FROM arm64v8/debian:latest
+
 # Actualizamos e instalamos las herramientas necesarias: Squid, OpenVPN, procps, net-tools, iptables, curl, dnsutils, nano, iputils-ping
 RUN apt-get update && apt-get install -y \
     squid \
