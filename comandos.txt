@@ -9,3 +9,24 @@ docker run -d --name squid-openvpn-proxy \
   --network host \
   -e SQUID_PORT=3128 \
   raspberry-pi-openvpn-squid-proxy
+
+docker run -d --name vpn_proxy --cap-add=NET_ADMIN --device /dev/net/tun -p 3128:3128 -v $(pwd)/client.ovpn:/client.ovpn -v $(pwd)/squid.conf:/squid.conf --env SQUID_PORT=3128 rpi_proxy
+
+
+
+# Eliminar contenedores
+docker ps -aq | xargs -r docker rm -f
+
+# Eliminar todas las imágenes 
+docker images -aq | xargs -r docker rmi -f
+
+
+docker ps -aq | xargs -r docker rm -f
+docker images -aq | xargs -r docker rmi -f
+
+
+borrar todo :
+docker system prune -a --volumes
+
+crear imagen:
+docker build -t rpi_proxy .
