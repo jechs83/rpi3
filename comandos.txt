@@ -51,3 +51,7 @@ git pull origin main
 
 
   docker logs squid-openvpn-proxy1
+
+
+
+  docker exec -it squid-openvpn-proxy1 bash

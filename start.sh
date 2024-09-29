@@ -1,13 +1,13 @@
 #!/bin/bash
 
-# Reemplazar la variable ${SQUID_PORT} en el archivo de configuración de Squid
-envsubst < /etc/squid/squid.conf.template > /etc/squid/squid.conf
+# Start OpenVPN using client.conf
+openvpn --config /etc/openvpn/client.conf &
 
-# Iniciar OpenVPN utilizando la configuración proporcionada
-openvpn --config ${OPENVPN_CONFIG} --dev tun &
+# Configure Squid's dynamic port
+sed -i "s/\${SQUID_PORT}/${SQUID_PORT}/" /etc/squid/squid.conf
 
-# Iniciar Squid con la configuración proporcionada
-squid -f /etc/squid/squid.conf
+# Start Squid
+service squid start
 
-# Mantener el contenedor activo
+# Keep the container running
 tail -f /dev/null
