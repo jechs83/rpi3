@@ -26,4 +26,4 @@ RUN mkdir -p /var/log/squid && touch /var/log/squid/access.log
 EXPOSE 3128
 
 # Comando de inicio
-CMD openvpn --config /etc/openvpn/client.conf & squid -N -f /etc/squid/squid.conf
+CMD ["sh", "-c", "openvpn --config /etc/openvpn/client.conf & squid -N -f /etc/squid/squid.conf"]
