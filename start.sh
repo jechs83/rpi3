@@ -1,26 +1,15 @@
 #!/bin/bash
 
-# Verificar si el dispositivo TUN está disponible
-if [ ! -c /dev/net/tun ]; then
-    echo "TUN/TAP device is not available. Ensure the container is started with --device /dev/net/tun."
-    exit 1
-fi
-
+# Iniciar OpenVPN en segundo plano
 echo "Iniciando OpenVPN..."
 openvpn --config /etc/openvpn/client.ovpn &
-OPENVPN_PID=$!
 
-# Esperar a que OpenVPN inicie correctamente
-sleep 5
+# Esperar a que la interfaz tun se active
+while [ ! -d /dev/net/tun ]; do
+    echo "Esperando a que se cree /dev/net/tun..."
+    sleep 1
+done
 
-if ! kill -0 $OPENVPN_PID > /dev/null 2>&1; then
-    echo "Error al iniciar OpenVPN, cerrando el contenedor."
-    exit 1
-fi
-
+# Iniciar Squid
 echo "Iniciando Squid..."
 squid -N -f /etc/squid/squid.conf
-if [ $? -ne 0 ]; then
-    echo "Error al iniciar Squid"
-    exit 1
-fi
