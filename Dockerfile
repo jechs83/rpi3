@@ -1,3 +1,4 @@
+# Imagen base para Raspberry Pi
 FROM arm64v8/debian:latest
 
 # Actualizamos e instalamos las herramientas necesarias: Squid, OpenVPN, procps, net-tools, iptables, curl, dnsutils, nano, iputils-ping
@@ -11,13 +12,11 @@ RUN apt-get update && apt-get install -y \
     dnsutils \
     nano \
     iputils-ping \
-    iproute2 \
+    gettext \
     && apt-get clean
 
-# Copiar el archivo de configuración de Squid y modificar el puerto
-COPY squid.conf /tmp/squid.conf
-RUN sed -i "s/^http_port .*/http_port ${SQUID_PORT}/" /tmp/squid.conf && \
-    mv /tmp/squid.conf /etc/squid/squid.conf
+# Copiar el archivo de configuración de Squid como una plantilla
+COPY squid.conf /etc/squid/squid.conf.template
 
 # Copiar el archivo de configuración de OpenVPN desde el directorio del Dockerfile y renombrarlo a client.conf
 COPY client.ovpn /etc/openvpn/client.conf
