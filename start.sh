@@ -1,9 +1,9 @@
 #!/bin/bash
-# Iniciar OpenVPN utilizando client.conf
-openvpn --config /etc/openvpn/client.conf &
+# Iniciar OpenVPN utilizando la configuración proporcionada
+openvpn --config ${OPENVPN_CONFIG} &
 # Configurar el puerto dinámico de Squid
-sed -i "s/^http_port .*/http_port ${SQUID_PORT}/" /etc/squid/squid.conf
+sed -i "s/^http_port .*/http_port ${SQUID_PORT}/" ${SQUID_CONFIG}
 # Iniciar Squid
-service squid start
+squid -f ${SQUID_CONFIG}
 # Mantener el contenedor activo
 tail -f /dev/null

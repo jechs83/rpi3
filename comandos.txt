@@ -39,4 +39,7 @@ docker system prune -a --volumes
 
 git add .
 git commit -m "sa"
-git push origin main
+git push origin 
+
+git pull origin main
+
