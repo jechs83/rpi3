@@ -19,6 +19,12 @@ fi
 echo "Iniciando OpenVPN..."
 openvpn --config "$OPENVPN_CONFIG" &
 
-# Iniciar Squid
+# Esperar un momento para asegurarse de que OpenVPN se inicie
+sleep 5
+
+# Iniciar Squid y redirigir los logs a la salida estándar
 echo "Iniciando Squid en el puerto ${SQUID_PORT}..."
-squid -N -f "$SQUID_CONFIG"
+squid -N -f "$SQUID_CONFIG" || {
+    echo "Error al iniciar Squid"
+    exit 1
+}
