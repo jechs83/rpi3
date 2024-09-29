@@ -1,7 +1,8 @@
-# Etapa 1: Base de la imagen
+DOCKER FILE
+
 FROM arm64v8/debian:latest
 
-# Instalar las librerías necesarias
+# Actualizamos e instalamos las herramientas necesarias: Squid, OpenVPN, procps, net-tools, iptables, curl, dnsutils, nano, iputils-ping
 RUN apt-get update && apt-get install -y \
     squid \
     openvpn \
@@ -15,15 +16,21 @@ RUN apt-get update && apt-get install -y \
     iproute2 \
     && apt-get clean
 
-# Copiar archivos externos de configuración
+# Copiar el archivo de configuración de OpenVPN desde el directorio del Dockerfile y renombrarlo a client.conf
 COPY client.ovpn /etc/openvpn/client.conf
+
+# Copiar el archivo de configuración de Squid desde el directorio del Dockerfile
 COPY squid.conf /etc/squid/squid.conf
 
-# Crear un directorio de logs para squid
-RUN mkdir -p /var/log/squid && touch /var/log/squid/access.log
+# Crear un script para iniciar OpenVPN y Squid con un puerto dinámico
+COPY start.sh /usr/local/bin/start.sh
+RUN chmod +x /usr/local/bin/start.sh
 
-# Exponer el puerto para el proxy Squid
-EXPOSE 3128
+# Definir el puerto de Squid como una variable de entorno
+ENV SQUID_PORT=3128
 
-# Comando de inicio
-CMD ["sh", "-c", "openvpn --config /etc/openvpn/client.conf & squid -N -f /etc/squid/squid.conf"]
+# Exponer el puerto dinámico para Squid
+EXPOSE ${SQUID_PORT}
+
+# Iniciar OpenVPN y Squid cuando se inicie el contenedor
+CMD ["/usr/local/bin/start.sh"]
