@@ -26,5 +26,7 @@ sleep 5
 echo "Iniciando Squid en el puerto ${SQUID_PORT}..."
 squid -N -f "$SQUID_CONFIG" || {
     echo "Error al iniciar Squid"
+    echo "Logs de Squid:"
+    cat /var/log/squid/cache.log
     exit 1
 }
