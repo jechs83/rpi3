@@ -1,7 +1,7 @@
-# Usa una imagen base de Raspberry Pi
-FROM arm32v7/debian:buster-slim
+# Etapa 1: Base de la imagen
+FROM arm64v8/debian:latest
 
-# Instala las dependencias necesarias
+# Instalar las librerías necesarias
 RUN apt-get update && apt-get install -y \
     squid \
     openvpn \
@@ -15,19 +15,15 @@ RUN apt-get update && apt-get install -y \
     iproute2 \
     && apt-get clean
 
-# Crea directorios para los archivos de configuración
-RUN mkdir -p /etc/openvpn/client /etc/squid
+# Copiar archivos externos de configuración
+COPY client.ovpn /etc/openvpn/client.conf
+COPY squid.conf /etc/squid/squid.conf
 
-# Copia los archivos de configuración de OpenVPN y Squid
-COPY client*.ovpn /etc/openvpn/client/
-COPY squid*.conf /etc/squid/
+# Crear un directorio de logs para squid
+RUN mkdir -p /var/log/squid && touch /var/log/squid/access.log
 
-# Expone los puertos para Squid
-EXPOSE 3128 3129
+# Exponer el puerto para el proxy Squid
+EXPOSE 3128
 
-# Script de inicio
-COPY start.sh /start.sh
-RUN chmod +x /start.sh
-
-# Comando para ejecutar al iniciar el contenedor
-CMD ["/start.sh"]
+# Comando de inicio
+CMD openvpn --config /etc/openvpn/client.conf & squid -N -f /etc/squid/squid.conf
