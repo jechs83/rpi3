@@ -43,3 +43,17 @@ git push origin
 
 git pull origin main
 
+docker run -d --name squid-openvpn-proxy1 \
+  --cap-add=NET_ADMIN \
+  --device /dev/net/tun \
+  -p 3128:3128 \
+  -e SQUID_PORT=3128 \
+  -e OPENVPN_CONFIG=/etc/openvpn/client1.ovpn \
+  -e SQUID_CONFIG=/etc/squid/squid1.conf \
+  -v /ruta/local/client1.ovpn:/etc/openvpn/client1.ovpn \
+  -v /ruta/local/squid1.conf:/etc/squid/squid1.conf \
+  raspberry-pi-openvpn-squid-proxy
+
+
+
+  docker build -t raspberry-pi-openvpn-squid-proxy .
