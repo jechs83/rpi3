@@ -1,0 +1,11 @@
+GENERAR LA IMAGEN
+docker build -t raspberry-pi-openvpn-squid-proxy .
+
+CORRER EL CONTENDOR 
+
+docker run -d --name squid-openvpn-proxy \
+  --cap-add=NET_ADMIN \
+  --device /dev/net/tun \
+  --network host \
+  -e SQUID_PORT=3128 \
+  raspberry-pi-openvpn-squid-proxy
