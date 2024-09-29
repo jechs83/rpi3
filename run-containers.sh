@@ -1,4 +1,5 @@
 #!/bin/bash
+git pull origin main
 
 # Cargar variables de entorno desde el archivo .env
 source .env
