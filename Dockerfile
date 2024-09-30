@@ -1,5 +1,5 @@
 # Utiliza una imagen base compatible con Raspberry Pi (Raspbian o Alpine con soporte ARM)
-FROM arm64v7/debian:buster
+FROM arm64v8/debian:latest
 
 
 
