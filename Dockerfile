@@ -1,36 +1,24 @@
-FROM arm64v8/debian:latest
+FROM ubuntu:20.04
 
-# Update and install necessary tools
 RUN apt-get update && apt-get install -y \
-    squid \
     openvpn \
-    procps \
-    net-tools \
-    iptables \
+    proxychains \
     curl \
-    dnsutils \
-    nano \
-    iputils-ping \
-    iproute2 \
-    && apt-get clean
+    && rm -rf /var/lib/apt/lists/*
 
-# Use build argument for OpenVPN config
-ARG OPENVPN_CONFIG=client.ovpn
-# Copy the OpenVPN config file
-COPY ${OPENVPN_CONFIG} /etc/openvpn/client.conf
+# Copiar archivos de configuración de VPN
+COPY vpn1.ovpn /etc/openvpn/vpn1.ovpn
+COPY vpn2.ovpn /etc/openvpn/vpn2.ovpn
 
-# Copy Squid configuration
-COPY squid.conf /etc/squid/squid.conf
+# Configurar ProxyChains
+RUN echo "strict_chain" > /etc/proxychains.conf \
+    && echo "proxy_dns" >> /etc/proxychains.conf \
+    && echo "[ProxyList]" >> /etc/proxychains.conf \
+    && echo "socks5 127.0.0.1 1080" >> /etc/proxychains.conf \
+    && echo "socks5 127.0.0.1 1081" >> /etc/proxychains.conf
 
-# Copy and set permissions for start script
-COPY start.sh /usr/local/bin/start.sh
-RUN chmod +x /usr/local/bin/start.sh
+# Script para iniciar VPNs y proxies
+COPY start.sh /start.sh
+RUN chmod +x /start.sh
 
-# Define Squid port as an environment variable
-ENV SQUID_PORT=3128
-
-# Expose the dynamic Squid port
-EXPOSE ${SQUID_PORT}
-
-# Start OpenVPN and Squid when the container starts
-CMD ["/usr/local/bin/start.sh"]
+CMD ["/start.sh"]
