@@ -5,7 +5,7 @@ start_vpn() {
     config=$1
     port=$2
     echo "Iniciando VPN con configuración $config en puerto $port"
-    openvpn --config $config --daemon --socks-proxy 0.0.0.0 $port --log /var/log/openvpn_$port.log
+    openvpn --config $config --daemon --socks-proxy 0.0.0.0 $port --log /var/log/openvpn_$port.log --verb 3
 
     # Esperar a que se establezca la conexión
     for i in {1..30}; do
@@ -16,6 +16,8 @@ start_vpn() {
         sleep 1
     done
     echo "Error: No se pudo establecer la conexión VPN en puerto $port"
+    echo "Últimas 20 líneas del log de OpenVPN:"
+    tail -n 20 /var/log/openvpn_$port.log
     return 1
 }
 
