@@ -1,27 +1,22 @@
-FROM ubuntu:20.04
+# Utiliza una imagen base compatible con Raspberry Pi (Raspbian o Alpine con soporte ARM)
+FROM arm64v7/debian:latest
 
-RUN apt-get update && apt-get install -y \
-    openvpn \
-    proxychains \
-    curl \
-    openssh-client \
-    net-tools \
-    iputils-ping \
-    && rm -rf /var/lib/apt/lists/*
+# Instalación de herramientas necesarias
+RUN apt-get update && \
+    apt-get install -y openvpn squid proxychains curl iproute2 nano
 
-# Copiar archivos de configuración de VPN
-COPY vpn1.ovpn /etc/openvpn/vpn1.ovpn
-COPY vpn2.ovpn /etc/openvpn/vpn2.ovpn
+# Copiar archivos de configuración al contenedor
+COPY client1.ovpn /etc/openvpn/client1.conf
+COPY client2.ovpn /etc/openvpn/client2.conf
+COPY squid.conf /etc/squid/squid.conf
 
-# Configurar ProxyChains
-RUN echo "strict_chain" > /etc/proxychains.conf \
-    && echo "proxy_dns" >> /etc/proxychains.conf \
-    && echo "[ProxyList]" >> /etc/proxychains.conf \
-    && echo "socks5 127.0.0.1 8080" >> /etc/proxychains.conf \
-    && echo "socks5 127.0.0.1 8081" >> /etc/proxychains.conf
+# Copiar archivo de configuración de Proxychains
+COPY proxychains.conf /etc/proxychains.conf
 
-# Script para iniciar VPNs y proxies
-COPY start.sh /start.sh
-RUN chmod +x /start.sh
+# Hacer que la herramienta ping esté disponible
+RUN apt-get install -y iputils-ping
 
-CMD ["/start.sh"]
+# Iniciar Squid y OpenVPN
+CMD bash -c "openvpn --config /etc/openvpn/client1.conf --daemon && \
+             openvpn --config /etc/openvpn/client2.conf --daemon && \
+             squid -N -f /etc/squid/squid.conf"
