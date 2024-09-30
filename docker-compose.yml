@@ -1,0 +1,29 @@
+version: '3'
+services:
+  vpn_proxy_1:
+    build: .
+    container_name: vpn_proxy_1
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun
+    ports:
+      - "3128:3128"  # Puerto para el proxy 1
+    volumes:
+      - ./client1.ovpn:/etc/openvpn/client.conf  # Archivo VPN 1
+      - ./squid1.conf:/etc/squid/squid.conf  # Configuración de Squid para proxy 1
+    restart: always
+
+  vpn_proxy_2:
+    build: .
+    container_name: vpn_proxy_2
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun
+    ports:
+      - "3130:3128"  # Puerto para el proxy 2
+    volumes:
+      - ./client2.ovpn:/etc/openvpn/client.conf  # Archivo VPN 2
+      - ./squid2.conf:/etc/squid/squid.conf  # Configuración de Squid para proxy 2
+    restart: always
