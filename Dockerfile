@@ -1,5 +1,7 @@
 # Utiliza una imagen base compatible con Raspberry Pi (Raspbian o Alpine con soporte ARM)
-FROM arm64v7/debian:latest
+FROM arm64v7/debian:buster
+
+
 
 # Instalación de herramientas necesarias
 RUN apt-get update && \
