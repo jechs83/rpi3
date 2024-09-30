@@ -4,6 +4,9 @@ RUN apt-get update && apt-get install -y \
     openvpn \
     proxychains \
     curl \
+    openssh-client \
+    net-tools \
+    iputils-ping \
     && rm -rf /var/lib/apt/lists/*
 
 # Copiar archivos de configuración de VPN
@@ -14,8 +17,8 @@ COPY vpn2.ovpn /etc/openvpn/vpn2.ovpn
 RUN echo "strict_chain" > /etc/proxychains.conf \
     && echo "proxy_dns" >> /etc/proxychains.conf \
     && echo "[ProxyList]" >> /etc/proxychains.conf \
-    && echo "socks5 127.0.0.1 1080" >> /etc/proxychains.conf \
-    && echo "socks5 127.0.0.1 1081" >> /etc/proxychains.conf
+    && echo "socks5 127.0.0.1 8080" >> /etc/proxychains.conf \
+    && echo "socks5 127.0.0.1 8081" >> /etc/proxychains.conf
 
 # Script para iniciar VPNs y proxies
 COPY start.sh /start.sh
